@@ -7,10 +7,7 @@ import { createStore } from '@/lib/storage';
  * Хранится в sessionStorage, чтобы пережить перезагрузку вкладки во время запроса.
  */
 export function createIdempotencyKey(scope: string) {
-  const store = createStore<{ identity: string; key: string }>(
-    `checkout.key.${scope}`,
-    () => sessionStorage,
-  );
+  const store = createStore<{ identity: string; key: string }>(`checkout.key.${scope}`, 'session');
   return {
     for(identity: unknown): string {
       const serialized = JSON.stringify(identity);
