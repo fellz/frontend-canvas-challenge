@@ -1,4 +1,25 @@
-# Тестовое задание: канвас на React Flow
+# Канвас «текст → генератор → результат» на React Flow — решение тестового (React 19 + TypeScript)
+
+Редактор нод с сохранением графа через REST (ETag / `If-Match`) и имитацией генерации
+изображения. Бэкенд, контракты и условия — от [instatdigital](https://github.com/instatdigital/frontend-canvas-challenge);
+всё в `apps/web` — моё.
+
+**Стек:** React 19 · TypeScript · Vite · `@xyflow/react` (React Flow 12) · react-router · TanStack Query.
+
+**Ключевые решения**
+
+- Очередь сохранений (`saver.ts`): debounce, строго последовательные PUT, flush перед запуском генерации, обработка 412 (устаревший ETag) и потери ответа.
+- Ноды не получают функций через `data`: контекст канваса даёт им `saver` и индекс генераций, а правки идут через API React Flow (`updateNodeData`, `deleteElements`) → `onNodesChange`, поэтому «нужно ли сохранять» решается в одном месте по типу изменения (`position/add/remove/replace` — да, `select/dimensions` — нет).
+- Постоянные и служебные поля разделены: на сервер уходят только `id/type/position/data` у нод и `id/source/target` у связей.
+- Правило связей (типы нод, один вход, один выход генератора) — отдельный модуль, не размазан по компонентам.
+
+Устройство, проверенные сценарии и недоработки — в **[apps/web/README.md](apps/web/README.md)**.
+Первое тестовое из той же пары — оформление заказа: [frontend-checkout-challenge](https://github.com/fellz/frontend-checkout-challenge)
+(и вариант [без TanStack Query](https://github.com/fellz/frontend-checkout-challenge-plain)).
+
+---
+
+## Условия задания (от instatdigital)
 
 Нужно сделать редактор с нодами «текст → генератор → результат», сохранением через REST и имитацией генерации изображения. Бэкенд готов, фронтенд добавьте в `apps/web`.
 
